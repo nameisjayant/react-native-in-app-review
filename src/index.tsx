@@ -1,1 +1,2 @@
-export { multiply } from './multiply';
+export { isAvailable, requestReview, openStoreListing } from './InAppReview';
+export type { InAppReviewErrorCode, StoreListingOptions } from './types';

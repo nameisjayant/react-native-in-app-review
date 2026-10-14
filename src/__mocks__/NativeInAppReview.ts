@@ -1,5 +1,7 @@
 const InAppReview = {
-  multiply: jest.fn((a: number, b: number) => a * b),
+  isAvailable: jest.fn(() => Promise.resolve(true)),
+  requestReview: jest.fn(() => Promise.resolve()),
+  openStoreListing: jest.fn((_appId: string | null) => Promise.resolve()),
 };
 
 export default InAppReview;
