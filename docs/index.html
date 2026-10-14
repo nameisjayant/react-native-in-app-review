@@ -251,6 +251,11 @@
     .platform dl { margin: 0; display: grid; gap: 10px; font-size: 15px; }
     .platform dt { font-weight: 600; }
     .platform dd { margin: 0; color: var(--muted); }
+    .shots { display: grid; gap: 16px; margin: 20px 0; }
+    .shot { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; background: var(--surface); }
+    .shot img { display: block; width: 100%; height: auto; border-radius: 8px; }
+    .shot.ios img { max-width: 260px; margin: 0 auto; }
+    .shot figcaption { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; color: var(--muted); }
 
     footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
     footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -459,6 +464,16 @@
           <li><strong>Android</strong> resolves once the review flow has finished.</li>
           <li><strong>iOS</strong> resolves once the request has been handed to StoreKit.</li>
         </ul>
+        <div class="shots">
+          <figure class="shot android">
+            <img src="assets/android-review.png" alt="Google Play in-app review flow: pick stars, write an optional review, submit, thank-you screen" loading="lazy" />
+            <figcaption><span class="pill android">Android</span>Google Play In-App Review flow</figcaption>
+          </figure>
+          <figure class="shot ios">
+            <img src="assets/ios-review.png" alt="iOS SKStoreReviewController rating dialog with five stars, Cancel and Submit" loading="lazy" />
+            <figcaption><span class="pill ios">iOS</span><code>SKStoreReviewController</code> rating prompt</figcaption>
+          </figure>
+        </div>
         <div class="callout">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>
           <p>Neither store tells you whether the prompt was shown or a review was submitted, and both enforce quotas. iOS shows it <strong>at most 3 times in 365 days</strong>, and Google Play applies its own time-bound quota. A resolved promise only means the request finished.</p>

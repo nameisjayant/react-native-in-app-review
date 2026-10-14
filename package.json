@@ -1,6 +1,6 @@
 {
   "name": "@nameisjayant/react-native-in-app-review",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Native in-app review prompt for React Native (Google Play In-App Review on Android, SKStoreReviewController on iOS)",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",

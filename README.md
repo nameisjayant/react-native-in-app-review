@@ -134,6 +134,11 @@ Asks the store to show its in-app review prompt — [Google Play In-App Review](
 - **Android** resolves once the review flow has finished.
 - **iOS** resolves once the request has been handed to StoreKit.
 
+| Android | iOS |
+| :---: | :---: |
+| <img src="https://raw.githubusercontent.com/nameisjayant/react-native-in-app-review/main/docs/assets/android-review.png" alt="Google Play in-app review flow" width="560" /> | <img src="https://raw.githubusercontent.com/nameisjayant/react-native-in-app-review/main/docs/assets/ios-review.png" alt="iOS SKStoreReviewController rating prompt" width="200" /> |
+| Google Play In-App Review flow | `SKStoreReviewController` rating prompt |
+
 > [!IMPORTANT]
 > Neither store tells you whether the prompt was actually shown or whether a review was submitted, and both enforce quotas — iOS shows it **at most 3 times in 365 days**, and Google Play applies its own time-bound quota. A resolved promise only means the request finished.
 
