@@ -1,0 +1,30 @@
+pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
+plugins { id("com.facebook.react.settings") }
+
+// Android Studio launched from the Dock gets a bare PATH, so resolve node ourselves:
+// prefer the nvm version pinned in .nvmrc, then common install locations, then PATH.
+def resolveNode = {
+  def home = System.getProperty("user.home")
+  def nvmrc = new File(rootDir, "../../.nvmrc")
+  def candidates = []
+  if (nvmrc.exists()) {
+    def version = nvmrc.text.trim()
+    if (!version.startsWith("v")) version = "v${version}"
+    candidates << "${home}/.nvm/versions/node/${version}/bin/node"
+  }
+  candidates += ["/opt/homebrew/bin/node", "/usr/local/bin/node"]
+  def found = candidates.find { new File(it).canExecute() }
+  return found ?: "node"
+}
+gradle.ext.nodeBinary = resolveNode()
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+  ex.autolinkLibrariesFromCommand([
+    gradle.ext.nodeBinary,
+    file("../node_modules/@react-native-community/cli/build/bin.js").absolutePath,
+    "config",
+  ])
+}
+rootProject.name = 'nameisjayant.reactnativeinappreview.example'
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
