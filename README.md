@@ -136,7 +136,7 @@ Asks the store to show its in-app review prompt — [Google Play In-App Review](
 
 | Android | iOS |
 | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/nameisjayant/react-native-in-app-review/main/docs/assets/android-review.png" alt="Google Play in-app review flow" width="560" /> | <img src="https://raw.githubusercontent.com/nameisjayant/react-native-in-app-review/main/docs/assets/ios-review.png" alt="iOS SKStoreReviewController rating prompt" width="200" /> |
+| <img src="https://raw.githubusercontent.com/nameisjayant/react-native-in-app-review/main/docs/assets/android.png" alt="Google Play in-app review flow" width="560" /> | <img src="https://raw.githubusercontent.com/nameisjayant/react-native-in-app-review/main/docs/assets/ios.png" alt="iOS SKStoreReviewController rating prompt" width="200" /> |
 | Google Play In-App Review flow | `SKStoreReviewController` rating prompt |
 
 > [!IMPORTANT]
