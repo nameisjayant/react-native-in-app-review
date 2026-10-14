@@ -53,9 +53,10 @@
   "bugs": {
     "url": "https://github.com/nameisjayant/react-native-in-app-review/issues"
   },
-  "homepage": "https://github.com/nameisjayant/react-native-in-app-review#readme",
+  "homepage": "https://nameisjayant.github.io/react-native-in-app-review/",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.0",

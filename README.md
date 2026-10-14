@@ -17,6 +17,7 @@
 </p>
 
 <p>
+  <a href="https://nameisjayant.github.io/react-native-in-app-review/"><strong>🌐 Website</strong></a> ·
   <a href="#-installation">Installation</a> ·
   <a href="#-quick-start">Quick start</a> ·
   <a href="#-api">API</a> ·
