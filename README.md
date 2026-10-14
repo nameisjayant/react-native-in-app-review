@@ -1,16 +1,76 @@
-# @nameisjayant/react-native-in-app-review
+<div align="center">
 
-Native in-app review prompt for React Native (Google Play In-App Review on Android, SKStoreReviewController on iOS)
+<h1>⭐️ React Native In-App Review</h1>
 
-## Installation
+<p>
+  <strong>Ask for a rating without ever leaving your app.</strong><br />
+  A tiny, typed TurboModule over Google Play In-App Review and Apple's <code>SKStoreReviewController</code>.
+</p>
 
+<p>
+  <a href="https://www.npmjs.com/package/@nameisjayant/react-native-in-app-review"><img alt="npm version" src="https://img.shields.io/npm/v/@nameisjayant/react-native-in-app-review?style=flat-square&color=111111&labelColor=111111" /></a>
+  <a href="https://www.npmjs.com/package/@nameisjayant/react-native-in-app-review"><img alt="npm downloads" src="https://img.shields.io/npm/dm/@nameisjayant/react-native-in-app-review?style=flat-square&color=111111&labelColor=111111" /></a>
+  <a href="https://github.com/nameisjayant/react-native-in-app-review/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/nameisjayant/react-native-in-app-review/ci.yml?branch=main&style=flat-square&label=CI&labelColor=111111" /></a>
+  <img alt="platforms" src="https://img.shields.io/badge/platforms-android%20%7C%20ios-111111?style=flat-square&labelColor=111111" />
+  <img alt="new architecture" src="https://img.shields.io/badge/new%20architecture-ready-111111?style=flat-square&labelColor=111111" />
+  <a href="LICENSE"><img alt="license" src="https://img.shields.io/github/license/nameisjayant/react-native-in-app-review?style=flat-square&color=111111&labelColor=111111" /></a>
+</p>
+
+<p>
+  <a href="#-installation">Installation</a> ·
+  <a href="#-quick-start">Quick start</a> ·
+  <a href="#-api">API</a> ·
+  <a href="#-error-codes">Error codes</a> ·
+  <a href="#-testing-the-prompt">Testing</a>
+</p>
+
+</div>
+
+<br />
+
+## ✨ Highlights
+
+|     |     |
+| --- | --- |
+| 🪶 **Three functions, that's it** | `isAvailable()`, `requestReview()`, `openStoreListing()` — nothing to configure. |
+| 📱 **Truly native** | Google Play In-App Review on Android, `SKStoreReviewController` on iOS. |
+| ⚡️ **New Architecture** | Built as a TurboModule with codegen — no bridge overhead. |
+| 🔒 **Fully typed** | Promise-based API with a typed `InAppReviewErrorCode` union for every rejection. |
+| 🛟 **Graceful fallback** | A "Rate us" button helper that opens the store's write-review page on both platforms. |
+| 🌐 **Web safe** | Imports cleanly on web — `isAvailable()` simply returns `false`. |
+
+<br />
+
+## 📦 Installation
 
 ```sh
 npm install @nameisjayant/react-native-in-app-review
+# or
+yarn add @nameisjayant/react-native-in-app-review
 ```
 
+Then install the iOS pods:
 
-## Usage
+```sh
+cd ios && pod install
+```
+
+That's all — autolinking handles the rest. No permissions, no manifest edits, no `Info.plist` keys.
+
+> [!NOTE]
+> Using Expo? This library contains native code, so it runs in a [development build](https://docs.expo.dev/develop/development-builds/introduction/), not in Expo Go.
+
+### Requirements
+
+| | Minimum |
+| --- | --- |
+| **React Native** | New Architecture enabled |
+| **Android** | `minSdkVersion 24`, Google Play Store on the device |
+| **iOS** | React Native's minimum supported iOS version |
+
+<br />
+
+## 🚀 Quick start
 
 ```tsx
 import {
@@ -19,53 +79,104 @@ import {
   openStoreListing,
 } from '@nameisjayant/react-native-in-app-review';
 
-// After a positive moment (finished a level, saved a document, ...):
-if (await isAvailable()) {
-  try {
-    await requestReview();
-  } catch (error) {
-    console.warn((error as { code?: string }).code);
+// 1. After a happy moment — finished a level, saved a document, hit a streak…
+async function onLevelComplete() {
+  if (await isAvailable()) {
+    try {
+      await requestReview();
+    } catch (error) {
+      console.warn((error as { code?: string }).code);
+    }
   }
+  // Carry on with your flow either way.
 }
 
-// From an explicit "Rate us" button:
-await openStoreListing({ iosAppId: '1234567890' });
+// 2. From an explicit "Rate us" button in Settings
+function RateUsButton() {
+  return (
+    <Button
+      title="Rate us"
+      onPress={() => openStoreListing({ iosAppId: '1234567890' })}
+    />
+  );
+}
 ```
 
-## API
+<br />
 
-### `isAvailable(): Promise<boolean>`
+## 📖 API
 
-Whether the native prompt can be requested. Android: the Google Play Store is installed. iOS: always `true`. Web: `false`.
+### `isAvailable()`
 
-### `requestReview(): Promise<void>`
+```ts
+isAvailable(): Promise<boolean>
+```
+
+Whether the native prompt can be requested on this device.
+
+| Platform | Returns |
+| --- | --- |
+| Android | `true` when the Google Play Store is installed |
+| iOS | Always `true` |
+| Web | Always `false` |
+
+---
+
+### `requestReview()`
+
+```ts
+requestReview(): Promise<void>
+```
 
 Asks the store to show its in-app review prompt — [Google Play In-App Review](https://developer.android.com/guide/playcore/in-app-review) on Android, [`SKStoreReviewController`](https://developer.apple.com/documentation/storekit/skstorereviewcontroller/) on iOS.
 
 - **Android** resolves once the review flow has finished.
 - **iOS** resolves once the request has been handed to StoreKit.
 
-Neither store tells you whether the prompt was shown or a review was submitted, and both enforce quotas (iOS shows it at most 3 times in 365 days; Play applies a time-bound quota). So:
+> [!IMPORTANT]
+> Neither store tells you whether the prompt was actually shown or whether a review was submitted, and both enforce quotas — iOS shows it **at most 3 times in 365 days**, and Google Play applies its own time-bound quota. A resolved promise only means the request finished.
 
-- Don't call it from a button — the prompt may not appear. Use `openStoreListing()` for that.
-- Don't ask the user a question (e.g. "Do you like the app?") before it.
-- Continue your app flow the same way whether it resolves or rejects.
+**Best practices**
 
-### `openStoreListing(options?): Promise<void>`
+- ✅ Call it after a positive moment, when the user has had time to enjoy your app.
+- ✅ Continue your app flow the same way whether it resolves or rejects.
+- ❌ Don't call it from a button — the prompt may not appear. Use `openStoreListing()` instead.
+- ❌ Don't ask a leading question first (e.g. *"Do you like the app?"*) — both stores' guidelines discourage it.
 
-Opens the store page so the user can write a review. Safe to call from a button.
+---
+
+### `openStoreListing(options?)`
+
+```ts
+openStoreListing(options?: StoreListingOptions): Promise<void>
+```
+
+Opens your app's store page so the user can write a review. Safe to call from a button.
 
 | Option | Platform | Description |
 | --- | --- | --- |
-| `iosAppId` | iOS | Numeric App Store ID (required on iOS). Opens `apps.apple.com/app/id<ID>?action=write-review`. |
+| `iosAppId` | iOS | Numeric App Store ID — **required on iOS**. Opens `apps.apple.com/app/id<ID>?action=write-review`. |
 | `androidPackageName` | Android | Defaults to the running app's package. Opens the Play Store app, or the Play website if it's missing. |
 
-### Error codes
+```ts
+await openStoreListing({
+  iosAppId: '1234567890',
+  androidPackageName: 'com.example.app', // optional
+});
+```
 
-Rejections carry an `error.code` (exported as the `InAppReviewErrorCode` type):
+<br />
+
+## 🚨 Error codes
+
+Every rejection carries an `error.code`, exported as the `InAppReviewErrorCode` type:
+
+```ts
+import type { InAppReviewErrorCode } from '@nameisjayant/react-native-in-app-review';
+```
 
 | Code | Platform | Meaning |
-| --- | --- | --- |
+| --- | :---: | --- |
 | `NO_ACTIVITY` | Android | No foreground activity to attach the flow to. |
 | `REVIEW_IN_PROGRESS` | Android | `requestReview()` called while a flow is still running. |
 | `PLAY_STORE_NOT_FOUND` | Android | Play Store missing or unofficial. |
@@ -77,21 +188,51 @@ Rejections carry an `error.code` (exported as the `InAppReviewErrorCode` type):
 | `UNSUPPORTED` | Web | No native review prompt on this platform. |
 | `UNKNOWN` | Android | Any other failure. |
 
-## Testing the prompt
+<br />
 
-- **Android:** the dialog only appears for apps installed from Google Play. Use [internal app sharing or an internal test track](https://developer.android.com/guide/playcore/in-app-review/test); a sideloaded debug build completes the flow without showing anything.
-- **iOS:** in development builds the prompt is always shown (it's never submitted). In TestFlight it is never shown. In App Store builds StoreKit applies its quota.
+## 🧪 Testing the prompt
 
-## Contributing
+<table>
+  <tr>
+    <th width="50%">🤖 Android</th>
+    <th width="50%"> iOS</th>
+  </tr>
+  <tr>
+    <td valign="top">
+      The dialog only appears for apps <strong>installed from Google Play</strong>.
+      Use <a href="https://developer.android.com/guide/playcore/in-app-review/test">internal app sharing or an internal test track</a>.
+      A sideloaded debug build completes the flow without showing anything.
+    </td>
+    <td valign="top">
+      In <strong>development</strong> builds the prompt is always shown (and never submitted).
+      In <strong>TestFlight</strong> it is never shown.
+      In <strong>App Store</strong> builds StoreKit applies its quota.
+    </td>
+  </tr>
+</table>
+
+> [!TIP]
+> The [`example/`](example) app wires up all three functions — run it with `yarn example android` or `yarn example ios`.
+
+<br />
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read the guides before opening a pull request:
 
 - [Development workflow](CONTRIBUTING.md#development-workflow)
 - [Sending a pull request](CONTRIBUTING.md#sending-a-pull-request)
 - [Code of conduct](CODE_OF_CONDUCT.md)
 
-## License
+<br />
 
-MIT
+## 📄 License
 
----
+[MIT](LICENSE) © [Jayant Kumar](https://github.com/nameisjayant)
 
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+<br />
+
+<div align="center">
+  <sub>If this library saved you some time, consider giving it a ⭐️ on GitHub.</sub><br />
+  <sub>Built with <a href="https://github.com/callstack/react-native-builder-bob">create-react-native-library</a>.</sub>
+</div>
